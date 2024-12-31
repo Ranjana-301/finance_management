@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personal Finance Management System</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header class="heading">
+        Personal Finance Management System
+    </header>
+    <div class="book">
+        <div class="cover"></div>
+        <div class="pages">
+            <div class="page left">
+                <h2>Login</h2>
+                <form id="loginForm" onsubmit="return validateLogin()">
+                    <label for="username">Username:</label>
+                    <input type="text" id="username" placeholder="Enter username" required>
+                    
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" placeholder="Enter password" required>
+                    
+                    <button type="submit">Login</button>
+                </form>
+            </div>
+            <div class="page right">
+                <h2>Create Account</h2>
+                <br>
+                <br>
+                <br>
+                <p>Create your account</p>
+                <p>and start managing smarter today!</p>
+                <br>
+                
+                <!-- Link to the Create Account page -->
+                <a href="create-account.html">
+                    <button>Create Account</button>
+                </a>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

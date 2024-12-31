@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Goals & Wishlist</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <h1>My Goals & Wishlist</h1>
+    <div class="goal-form">
+      <input type="text" id="goalInput" placeholder="Add your goal or wish here...">
+      <button onclick="addGoal()">Add</button>
+    </div>
+    <ul id="goalList">
+      <!-- Goals will be listed here -->
+    </ul>
+  </div>
+
+  <script>
+    function addGoal() {
+      const goalInput = document.getElementById('goalInput');
+      const goalList = document.getElementById('goalList');
+
+      if (goalInput.value.trim() === '') {
+        alert('Please enter a goal or wish.');
+        return;
+      }
+
+      // Create list item
+      const li = document.createElement('li');
+      li.textContent = goalInput.value;
+
+      // Add delete button
+      const deleteBtn = document.createElement('button');
+      deleteBtn.textContent = 'Delete';
+      deleteBtn.onclick = () => goalList.removeChild(li);
+
+      li.appendChild(deleteBtn);
+      goalList.appendChild(li);
+      goalInput.value = '';
+    }
+  </script>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      background-color: #f4f4f9;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 50px auto;
+      padding: 20px;
+      background: #ffffff;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      border-radius: 8px;
+    }
+
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+
+    .goal-form {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .goal-form input {
+      flex: 1;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+
+    .goal-form button {
+      padding: 10px 20px;
+      margin-left: 10px;
+      border: none;
+      background: #007BFF;
+      color: white;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .goal-form button:hover {
+      background: #0056b3;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    ul li {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px;
+      margin-bottom: 5px;
+      background: #f1f1f1;
+      border-radius: 4px;
+    }
+
+    ul li button {
+      padding: 5px 10px;
+      border: none;
+      background: #ff4d4d;
+      color: white;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    ul li button:hover {
+      background: #cc0000;
+    }
+  </style>
+</body>
+</html>

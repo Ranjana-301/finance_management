@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard with Sidebar</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            display: flex;
+            height: 100vh;
+        }
+
+        /* Sidebar Styling */
+        .sidebar {
+            background-color: #5d4037;
+            color: white;
+            width: 250px;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding-top: 20px;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .sidebar a {
+            color: white;
+            text-decoration: none;
+            padding: 15px 20px;
+            display: block;
+            font-size: 1.1rem;
+            transition: background-color 0.3s ease;
+        }
+
+        .sidebar a:hover {
+            background-color: #4e342e;
+        }
+
+        .sidebar a.active {
+            background-color: #3e2723;
+        }
+
+        /* Content Area */
+        .content {
+            flex-grow: 1;
+            padding: 20px;
+            display: none; /* Hidden by default */
+        }
+
+        .content.active {
+            display: block; /* Shown when active */
+        }
+
+        /* Table Styling */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th, td {
+            border: 1px solid #ccc;
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #5d4037;
+            color: white;
+        }
+
+        .balances p {
+            font-size: 1.2rem;
+        }
+
+        .btn {
+            background-color: #5d4037;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background-color: #4e342e;
+        }
+
+        .form-container {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .form-container input, .form-container select {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        /* Notification Styling */
+        .notification {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background-color: #ffc107;
+            color: black;
+            padding: 10px 15px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            display: none;
+        }
+
+        .notification.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <a href="#" class="active" onclick="showSection('balances')">Balances</a>
+        <a href="#" onclick="showSection('transactions')">Transactions</a>
+        <a href="#" onclick="showSection('bills')">Bills</a>
+    </div>
+
+    <!-- Balances Section -->
+    <div id="balances" class="content active">
+        <h2>Balances</h2>
+        <div id="balance-display-container">
+            <div class="balance" data-bank="Bank A">
+                <p>Bank A: ₹50,000</p>
+            </div>
+            <div class="balance" data-bank="Bank B">
+                <p>Bank B: ₹30,000</p>
+            </div>
+        </div>
+
+        <div class="form-container">
+            <input type="text" id="new-bank-name" placeholder="Bank Name" required>
+            <input type="number" id="new-bank-balance" placeholder="Balance" required>
+            <button class="btn" onclick="addBankAccount()">Add Bank Account</button>
+        </div>
+    </div>
+
+    <!-- Transactions Section -->
+    <div id="transactions" class="content">
+        <h2>Recent Transactions</h2>
+        <table id="transactions-table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Description</th>
+                    <th>Amount</th>
+                    <th>Type</th>
+                    <th>Bank</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+
+        <div class="form-container">
+            <input type="date" id="date" required>
+            <input type="text" id="description" placeholder="Description" required>
+            <input type="number" id="amount" placeholder="Amount" required>
+            <select id="type">
+                <option value="Credit">Credit</option>
+                <option value="Debit">Debit</option>
+            </select>
+            <select id="bank-select">
+                <option value="Bank A">Bank A</option>
+                <option value="Bank B">Bank B</option>
+            </select>
+            <button class="btn" onclick="addTransaction()">Add Transaction</button>
+        </div>
+    </div>
+
+    <!-- Bills Section -->
+    <div id="bills" class="content">
+        <h2>Bills</h2>
+        <table id="bills-table">
+            <thead>
+                <tr>
+                    <th>Bill Name</th>
+                    <th>Due Date</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+
+        <div class="form-container">
+            <input type="text" id="bill-name" placeholder="Bill Name" required>
+            <input type="date" id="bill-due-date" required>
+            <input type="number" id="bill-amount" placeholder="Amount" required>
+            <button class="btn" onclick="addBill()">Add Bill</button>
+        </div>
+    </div>
+
+    <div id="notification" class="notification"></div>
+
+    <script>
+        let balanceData = {
+            "Bank A": 50000,
+            "Bank B": 30000
+        };
+
+        // Function to show specific sections
+        function showSection(sectionId) {
+            const contents = document.querySelectorAll('.content');
+            contents.forEach(content => content.classList.remove('active'));
+
+            document.getElementById(sectionId).classList.add('active');
+
+            const links = document.querySelectorAll('.sidebar a');
+            links.forEach(link => link.classList.remove('active'));
+
+            document.querySelector(`.sidebar a[onclick="showSection('${sectionId}')"]`).classList.add('active');
+        }
+
+        // Function to add a bank account
+        function addBankAccount() {
+            const bankName = document.getElementById('new-bank-name').value;
+            const bankBalance = parseFloat(document.getElementById('new-bank-balance').value);
+
+            if (!bankName || isNaN(bankBalance)) {
+                alert("Please fill in both fields.");
+                return;
+            }
+
+            balanceData[bankName] = bankBalance;
+
+            // Update balance display
+            const balanceContainer = document.getElementById('balance-display-container');
+            const newBalanceDiv = document.createElement('div');
+            newBalanceDiv.classList.add('balance');
+            newBalanceDiv.setAttribute('data-bank', bankName);
+            newBalanceDiv.innerHTML = `<p>${bankName}: ₹${bankBalance}</p>`;
+            balanceContainer.appendChild(newBalanceDiv);
+
+            // Update bank select dropdowns
+            const bankSelects = document.querySelectorAll('#bank-select, .bank-select');
+            bankSelects.forEach(select => {
+                const option = document.createElement('option');
+                option.value = bankName;
+                option.textContent = bankName;
+                select.appendChild(option);
+            });
+        }
+
+        // Function to add a transaction
+        function addTransaction() {
+            const date = document.getElementById("date").value;
+            const description = document.getElementById("description").value;
+            const amount = parseFloat(document.getElementById("amount").value);
+            const type = document.getElementById("type").value;
+            const bank = document.getElementById("bank-select").value;
+
+            if (!date || !description || isNaN(amount)) {
+                alert("Please fill all fields.");
+                return;
+            }
+
+            const table = document.getElementById("transactions-table").querySelector("tbody");
+            const row = document.createElement("tr");
+
+            row.innerHTML = `
+                <td>${date}</td>
+                <td>${description}</td>
+                <td>${amount}</td>
+                <td>${type}</td>
+                <td>${bank}</td>
+                <td><button class="btn" onclick="deleteTransaction(this)">Delete</button></td>
+            `;
+
+            table.appendChild(row);
+
+            // Update balance
+            if (type === "Credit") {
+                balanceData[bank] += amount;
+            } else {
+                balanceData[bank] -= amount;
+            }
+
+            updateBalanceDisplay();
+        }
+
+        // Function to delete a transaction
+        function deleteTransaction(button) {
+            const row = button.parentElement.parentElement;
+            const amount = parseFloat(row.cells[2].textContent);
+            const type = row.cells[3].textContent;
+            const bank = row.cells[4].textContent;
+
+            // Update balance
+            if (type === "Credit") {
+                balanceData[bank] -= amount;
+            } else {
+                balanceData[bank] += amount;
+            }
+
+            row.remove();
+            updateBalanceDisplay();
+        }
+
+        // Function to update balance display
+        function updateBalanceDisplay() {
+            const balanceContainer = document.getElementById('balance-display-container');
+            balanceContainer.innerHTML = '';
+            for (const bank in balanceData) {
+                const balanceDiv = document.createElement('div');
+                balanceDiv.classList.add('balance');
+                balanceDiv.innerHTML = `<p>${bank}: ₹${balanceData[bank]}</p>`;
+                balanceContainer.appendChild(balanceDiv);
+            }
+        }
+
+        // Function to add a bill
+        function addBill() {
+            const billName = document.getElementById('bill-name').value;
+            const dueDate = document.getElementById('bill-due-date').value;
+            const amount = parseFloat(document.getElementById('bill-amount').value);
+
+            if (!billName || !dueDate || isNaN(amount)) {
+                alert("Please fill all fields.");
+                return;
+            }
+
+            const table = document.getElementById('bills-table').querySelector('tbody');
+            const row = document.createElement('tr');
+
+            row.innerHTML = `
+                <td>${billName}</td>
+                <td>${dueDate}</td>
+                <td>${amount}</td>
+                <td>Pending</td>
+                <td><button class="btn" onclick="markBillAsPaid(this)">Mark as Paid</button></td>
+            `;
+
+            table.appendChild(row);
+            showNotification(billName, dueDate);
+        }
+
+        // Function to mark a bill as paid
+        function markBillAsPaid(button) {
+            const row = button.parentElement.parentElement;
+            row.cells[3].textContent = 'Paid';
+            button.remove();
+            hideNotification();
+        }
+
+        // Function to show notification
+        function showNotification(billName, dueDate) {
+            const notification = document.getElementById('notification');
+            notification.textContent = `Reminder: ${billName} is due on ${dueDate}`;
+            notification.classList.add('active');
+        }
+
+        // Function to hide notification
+        function hideNotification() {
+            const notification = document.getElementById('notification');
+            notification.classList.remove('active');
+        }
+    </script>
+</body>
+</html>

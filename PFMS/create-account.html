@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Account</title>
+    <style>
+        /* Inline CSS for additional styling */
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background: #f4f4f9;
+            font-family: Arial, sans-serif;
+        }
+
+        .heading {
+            position: absolute;
+            top: 0;
+            width: 100%;
+            text-align: center;
+            background: #5d4037;
+            color: white;
+            padding: 15px 0;
+            font-size: 1.8rem;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .account-form-container {
+            background: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            width: 400px;
+            text-align: center;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+            color: #5d4037;
+            font-size: 1.5rem;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        label {
+            font-size: 14px;
+            color: #333;
+            text-align: left;
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 14px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        button {
+            background: #5d4037;
+            color: white;
+            border: none;
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background: #4e342e;
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        /* Center form container */
+        .account-form-container {
+            margin-top: 80px; /* Space from the fixed heading */
+        }
+    </style>
+</head>
+<body>
+    <header class="heading">
+        Create Your Account
+    </header>
+    <div class="account-form-container">
+        <h2>Create Account</h2>
+        <form action="{{ url_for('create_account') }}" method="POST">
+            <label for="firstName">First Name:</label>
+            <input type="text" id="firstName" name="firstName" required>
+            
+            <label for="lastName">Last Name:</label>
+            <input type="text" id="lastName" name="lastName" required>
+    
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="newUsername" required>
+    
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="newPassword" required>
+    
+            <label for="confirmPassword">Confirm Password:</label>
+            <input type="password" id="confirmPassword" name="confirmPassword" required>
+    
+            <button type="submit">Create Account</button>
+        </form>
+    
+        <p>Already have an account? <a href="front-page.html">Login here</a></p>
+    </div>
+</body>
+</html>

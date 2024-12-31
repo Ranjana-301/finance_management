@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard with Sidebar</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            display: flex;
+            height: 100vh;
+        }
+
+        .sidebar {
+            background-color: #5d4037;
+            color: white;
+            width: 250px;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding-top: 20px;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .sidebar a {
+            color: white;
+            text-decoration: none;
+            padding: 15px 20px;
+            display: block;
+            font-size: 1.1rem;
+            transition: background-color 0.3s ease;
+        }
+
+        .sidebar a:hover {
+            background-color: #4e342e;
+        }
+
+        .sidebar a.active {
+            background-color: #3e2723;
+        }
+
+        .content {
+            flex-grow: 1;
+            padding: 20px;
+            display: none;
+        }
+
+        .content.active {
+            display: block;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th, td {
+            border: 1px solid #ccc;
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #5d4037;
+            color: white;
+        }
+
+        .form-container {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .form-container input, .form-container select {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        .btn {
+            background-color: #5d4037;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background-color: #4e342e;
+        }
+
+        .category-summary {
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .category-summary div {
+            padding: 10px;
+            background-color: #5d4037;
+            color: white;
+            border-radius: 5px;
+            width: 18%;
+            text-align: center;
+        }
+
+        .dashboard-blocks-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-gap: 20px;
+            max-width: 100%;
+            margin-top: 20px;
+        }
+
+        .dashboard-block {
+            background-color: #5d4037;
+            color: white;
+            padding: 20px;
+            border-radius: 5px;
+            text-align: center;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .dashboard-block:hover {
+            background-color: #4e342e;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-blocks-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .dashboard-blocks-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <a href="#" class="active" onclick="showSection('dashboard')">Dashboard</a>
+        <a href="#" onclick="showSection('balances')">Balances</a>
+        <a href="#" onclick="showSection('transactions')">Transactions</a>
+        <a href="#" onclick="showSection('bills')">Bills</a>
+        <a href="#" onclick="showSection('expenses')">Expenses</a>
+        <a href="#" onclick="showSection('goals')">Goals</a>
+        <a href="#" onclick="logout()">Logout</a>
+    </div>
+
+    <div id="dashboard" class="content active">
+        <h2>Dashboard</h2>
+        <div class="dashboard-blocks-container">
+            <div class="dashboard-block" onclick="showSection('balances')">
+                <h3>Balances</h3>
+                <p>View your bank account balances</p>
+            </div>
+            <div class="dashboard-block" onclick="showSection('transactions')">
+                <h3>Transactions</h3>
+                <p>View recent transactions</p>
+            </div>
+            <div class="dashboard-block" onclick="showSection('bills')">
+                <h3>Bills</h3>
+                <p>Track your bills and due dates</p>
+            </div>
+            <div class="dashboard-block" onclick="showSection('expenses')">
+                <h3>Expenses</h3>
+                <p>Analyze your expenses</p>
+            </div>
+            <div class="dashboard-block" onclick="showSection('goals')">
+                <h3>Goals</h3>
+                <p>Track your financial goals</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="balances" class="content">
+        <h2>Balances</h2>
+        <div id="balance-display-container">
+            <div class="balance" data-bank="Bank A">
+                <p>Bank A: ₹50,000</p>
+            </div>
+            <div class="balance" data-bank="Bank B">
+                <p>Bank B: ₹30,000</p>
+            </div>
+        </div>
+        <div class="form-container">
+            <input type="text" id="new-bank-name" placeholder="Bank Name" required>
+            <input type="number" id="new-bank-balance" placeholder="Balance" required>
+            <button class="btn" onclick="addBankAccount()">Add Bank Account</button>
+        </div>
+    </div>
+
+    <div id="transactions" class="content">
+        <h2>Recent Transactions</h2>
+        <table id="transactions-table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Description</th>
+                    <th>Amount</th>
+                    <th>Type</th>
+                    <th>Bank</th>
+                    <th>Category</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+        <div class="form-container">
+            <input type="date" id="date" required>
+            <input type="text" id="description" placeholder="Description" required>
+            <input type="number" id="amount" placeholder="Amount" required>
+            <select id="type">
+                <option value="Credit">Credit</option>
+                <option value="Debit">Debit</option>
+            </select>
+            <select id="bank-select">
+                <option value="Bank A">Bank A</option>
+                <option value="Bank B">Bank B</option>
+            </select>
+            <select id="category">
+                <option value="Food">Food</option>
+                <option value="Rent">Rent</option>
+                <option value="Entertainment">Entertainment</option>
+                <option value="Others">Others</option>
+            </select>
+            <button class="btn" onclick="addTransaction()">Add Transaction</button>
+        </div>
+    </div>
+
+    <div id="bills" class="content">
+        <h2>Bills</h2>
+        <table id="bills-table">
+            <thead>
+                <tr>
+                    <th>Bill Name</th>
+                    <th>Due Date</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+        <div class="form-container">
+            <input type="text" id="bill-name" placeholder="Bill Name" required>
+            <input type="date" id="bill-due-date" required>
+            <input type="number" id="bill-amount" placeholder="Amount" required>
+            <button class="btn" onclick="addBill()">Add Bill</button>
+        </div>
+    </div>
+
+    <div id="expenses" class="content">
+        <h2>Expenses Analysis</h2>
+        <canvas id="expenseChart" width="400" height="200"></canvas>
+    </div>
+
+    <div id="goals" class="content">
+        <h2>Goals</h2>
+        <table id="goals-table">
+            <thead>
+                <tr>
+                    <th>Goal Item</th>
+                    
+                    <th>Amount</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+        <div class="form-container">
+            <input type="text" id="goal-item" placeholder="Goal Item" required>
+          
+            <input type="number" id="bill-amount" placeholder="Amount" required>
+            <button class="btn" onclick="addGoal()">Add Goal</button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const transactions = [];
+        const goals = [];
+        const categories = ['Food', 'Rent', 'Entertainment', 'Others'];
+
+        // Function to show the appropriate section
+        function showSection(sectionId) {
+            document.querySelectorAll('.content').forEach((section) => {
+                section.classList.remove('active');
+            });
+            document.getElementById(sectionId).classList.add('active');
+
+            document.querySelectorAll('.sidebar a').forEach((link) => {
+                link.classList.remove('active');
+            });
+            document.querySelector(`.sidebar a[href='#${sectionId}']`).classList.add('active');
+        }
+        
+        // Function to add a new bank account
+        let bal=0.0
+        function addBankAccount() {
+            const bankName = document.getElementById('new-bank-name').value;
+            const balance = document.getElementById('new-bank-balance').value;
+            if (bankName && balance) {
+                const bankDiv = document.createElement('div');
+                bankDiv.className = 'balance';
+                bankDiv.innerHTML = `<p>${bankName}: ₹${balance}</p>`;
+                document.getElementById('balance-display-container').appendChild(bankDiv);
+                document.getElementById('new-bank-name').value = '';
+               bal= document.getElementById('new-bank-balance').value = '';
+
+            }
+        }
+
+        // Function to add a new transaction
+        function addTransaction() {
+            const date = document.getElementById('date').value;
+            const description = document.getElementById('description').value;
+            const amount = parseFloat(document.getElementById('amount').value);
+            const type = document.getElementById('type').value;
+            const bank = document.getElementById('bank-select').value;
+            const category = document.getElementById('category').value;
+
+            if (date && description && amount && type && category) {
+                const transaction = { date, description, amount, type, bank, category };
+                transactions.push(transaction);
+                updateTransactionsTable();
+                updateChart();
+            }
+        }
+
+        // Function to update the transactions table
+        function updateTransactionsTable() {
+            const tableBody = document.querySelector('#transactions-table tbody');
+            tableBody.innerHTML = '';
+            transactions.forEach((transaction) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${transaction.date}</td>
+                    <td>${transaction.description}</td>
+                    <td>${transaction.amount}</td>
+                    <td>${transaction.type}</td>
+                    <td>${transaction.bank}</td>
+                    <td>${transaction.category}</td>
+                    <td><button class="btn">Delete</button></td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        // Function to add a new bill
+        function addBill() {
+            const billName = document.getElementById('bill-name').value;
+            const dueDate = document.getElementById('bill-due-date').value;
+            const amount = parseFloat(document.getElementById('bill-amount').value);
+
+            if (billName && dueDate && amount) {
+                const billRow = document.createElement('tr');
+                billRow.innerHTML = `
+                    <td>${billName}</td>
+                    <td>${dueDate}</td>
+                    <td>${amount}</td>
+                    <td>${Pending ? 'Paid' : 'Pending'}</td>
+
+                    <td><button class="btn">Pay</button></td>
+                `;
+                document.querySelector('#bills-table tbody').appendChild(billRow);
+                document.getElementById('bill-name').value = '';
+                document.getElementById('bill-due-date').value = '';
+                document.getElementById('bill-amount').value = '';
+            }
+        }
+
+        // Function to add a goal
+        function addGoal() {
+            const goalName = document.getElementById('goal-name').value;
+            const goalAmount = parseFloat(document.getElementById('goal-amount').value);
+           
+
+            if (goalName && goalAmount) {
+                const goal = { name: goalName, amount: goalAmount};
+                goals.push(goal);
+                updateGoalSummary();
+            }
+
+            if (goalAmount <= bal) {
+                alert(`You have enough balance (₹${bal}) to purchase "${goalName}" worth ₹${goalAmount}!`);
+        }
+    }
+
+        // Function to update the goal summary
+        function updateGoalSummary() {
+            const summaryContainer = document.getElementById('goal-summary-container');
+            summaryContainer.innerHTML = '';
+            goals.forEach((goal) => {
+                const goalDiv = document.createElement('div');
+                goalDiv.innerHTML = `<strong>${goal.name}</strong>: ₹${goal.saved} / ₹${goal.amount}`;
+                summaryContainer.appendChild(goalDiv);
+            });
+        }
+
+        // Function to update the expense chart
+        function updateChart() {
+            const categorySummary = {};
+            transactions.forEach((transaction) => {
+                if (!categorySummary[transaction.category]) {
+                    categorySummary[transaction.category] = 0;
+                }
+                categorySummary[transaction.category] += transaction.amount;
+            });
+
+            goals.forEach((goal) => {
+                if (!categorySummary[goal.name]) {
+                    categorySummary[goal.name] = 0;
+                }
+                categorySummary[goal.name] += goal.saved;
+            });
+
+            const categories = Object.keys(categorySummary);
+            const data = Object.values(categorySummary);
+
+            const ctx = document.getElementById('expenseChart').getContext('2d');
+            if (window.chart) {
+                window.chart.destroy(); // Destroy the previous chart before creating a new one
+            }
+            window.chart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: categories,
+                    datasets: [{
+                        label: 'Amount (₹)',
+                        data: data,
+                        backgroundColor: ['#FF5733', '#33FF57', '#3357FF', '#FF33A6'],
+                        borderWidth: 1
+                    }]
+                }
+            });
+        }
+
+        // Initialize the dashboard with default section
+        showSection('dashboard');
+    </script>
+</body>
+</html>
